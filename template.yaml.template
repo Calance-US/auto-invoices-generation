@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  'auto-invoice-generation
+
+  Sample SAM Template for auto-invoice-generation
+  '
+  
+Parameters:
+  SGSTPERCENT:
+    Type: Number
+  CGSTPERCENT:
+    Type: Number
+  IGSTPERCENT:
+    Type: Number
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 600
+
+Resources:
+  AutoInvoiceFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Environment:
+        Variables:
+          SGST_PERCENT: !Ref SGSTPERCENT
+          CGST_PERCENT: !Ref CGSTPERCENT
+          IGST_PERCENT: !Ref IGSTPERCENT
+      PackageType: Image
+      Policies:
+      - AmazonS3FullAccess
+      Architectures:
+        - x86_64
+      ImageUri: autoinvoicefunction:python3.8-v1
+      # Layers:
+      #   - !Ref WkHtmlToPDFLayer
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref InvoiceDataBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.xls'
+    Metadata:
+      DockerTag: python3.8-v1
+      DockerContext: ./
+      Dockerfile: Dockerfile
+  InvoiceDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: autoinvoicetest
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt AutoInvoiceFunction.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: 's3.amazonaws.com'
+      SourceAccount: !Sub ${AWS::AccountId}
+      SourceArn: !GetAtt InvoiceDataBucket.Arn
