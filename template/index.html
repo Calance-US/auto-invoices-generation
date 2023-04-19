@@ -1,0 +1,269 @@
+<!doctype html>
+<!-- To run the current sample code in your own environment, copy this to an html page. -->
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="referrer" content="no-referrer">
+	<!-- <a href="https://example.com" referrer="no-referrer">Link</a> -->
+	<meta name="referrer" content="strict-origin-when-cross-origin">
+
+
+	<title>Invoice cum Inward Supply</title>
+	<!-- Bootstrap Css -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+	<style>
+		.small-box {
+			width: 100%;
+			max-width: 1000px;
+			border: 2px solid rgb(0, 0, 0);
+		}
+
+		.border-botton-2 {
+			border-bottom: 2px solid #333333
+		}
+
+		.bottom-text {
+			width: 100%;
+			max-width: 1000px;
+		}
+
+		label {
+			font-weight: bold;
+		}
+
+		.bill-to label,
+		.ship-to label {
+			width: 125px;
+		}
+
+		.sub-head {
+			border: 2px solid #000000
+		}
+
+		.d-ib {
+			display: inline-block;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container pt-4" id="result">
+	</div>
+
+	<!-- Bootstrap js -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+		crossorigin="anonymous"></script>
+	<!-- Jquery -->
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<!-- JS Render for dynamic templating -->
+	<script src="https://www.jsviews.com/download/jsviews.min.js"></script>
+
+	<div class="small-box mx-auto">
+		<h4 class="text-center border-botton-2">Invoice cum Inward Supply </h4>
+		<div class="inner-box p-1">
+			<div class="row">
+				<!-- vendor section Starts -->
+				<div class="col-sm-7 vender-details">
+					<div>
+						<label for="">Name of Supplier:</label> <span>{{ vendor }}</span>
+					</div>
+					<div>
+						<label for="">Address:</label> <span>{{ address }}</span>
+					</div>
+					<div>
+						<label for=""> Mobile No:</label> <span>{{ contact }}</span>
+					</div>
+
+
+				</div><!-- vendor section Ends -->
+				<!-- invoice section Starts -->
+				<div class="col-sm-5  invoice-detail text-left">
+					<div>
+						<label for="">Inv No:</label> <span>{{ invoice_number }}</span>
+					</div>
+					<div>
+						<label for="">Date:</label> <span>{{ invoice_date }}</span>
+					</div>
+					<div>
+						<label for="">Tax payable under Reverse Charge:</label> <span>No</span>
+					</div>
+					<div>
+						<label for="">Mode of Transport:</label> <span>By Road</span>
+					</div>
+					<div>
+						<label for="">Place of Supply:</label> <span>Haryana (06)</span>
+					</div>
+
+				</div><!-- invoice section Ends -->
+			</div>
+			<div class="row my-4">
+				<!-- Bill to section Starts-->
+				<div class="col-sm-6 bill-to">
+
+					<h6 class="fw-bold sub-head p-1">Billed to</h6>
+					<div>
+						<label for="">Name:</label><span id="company_name">ABC Technolgy & Services Pvt Ltd</span>
+					</div>
+					<div class="row">
+						<div class="col-sm-3">
+							<label for="">Address:</label>
+						</div>
+						<div class="col-sm-9">
+							<span class="d-ib" id="address">Plot No. F- 2,27 & 7A, Jai Lok Phase 2,<br/>Gurugram,
+								Haryana-122002.</span>
+						</div>
+					</div>
+					<div>
+						<label for="">State and Code:</label><span>Haryana (06)</span>
+					</div>
+					<div>
+						<label for="">GSTIN: </label><span id="gstin">KDFHFKHK749348</span>
+					</div>
+				</div><!-- bill to section Ends-->
+				<!-- Ship to section Starts-->
+				<div class="col-sm-6 ship-to">
+					<h6 class="fw-bold sub-head p-1">Shipped to</h6>
+					<div>
+						<label for="">Name:</label><span id="company_name1">ABC Technolgy & Services Pvt Ltd</span>
+					</div>
+					<div class="row">
+						<div class="col-sm-3">
+							<label for="">Address:</label>
+						</div>
+						<div class="col-sm-9">
+							<span class="d-ib" id="address1">Plot No. F- 2,27 & 7A, Jai Lok Phase 2,<br/>Gurugram,
+								Haryana-122002.</span>
+						</div>
+					</div>
+					<div>
+						<label for="">State and Code:</label><span>Haryana (06)</span>
+					</div>
+					<div>
+						<label for="">GSTIN: </label><span id="gstin1">KDFHFKHK749348</span>
+					</div>
+				</div><!-- Ship to section Ends-->
+
+			</div>
+			<!-- table section Starts-->
+			<div class="row">
+				<div class="col-sm-12">
+					<table class="table table-sm table-bordered table-striped mb-0">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Description of Goods</th>
+								<th scope="col">HSN Code</th>
+								<th scope="col">Qty (UQC)</th>
+								<th scope="col">Rate</th>
+								<th scope="col">Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in items %}
+							<tr>
+								<th scope="row">{{ item.sno }}</th>
+								<td>{{ item.product_name }}</td>
+								<td>{{ item.hsn_code }}</td>
+								<td>{{ item.product_qty }}</td>
+								<td>{{ item.product_rate }}</td>
+								<td>{{ item.product_total }}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<!-- <tfoot>
+		    <tr>
+			<td colspan="5" class="text-center">Total</td>
+			<td>{{ invoice_total }}</td>
+		      </tr>
+		  </tfoot> -->
+					</table>
+				</div>
+			</div><!-- table ends -->
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="mb-5 pb-5">
+						<label for="">Declarations:</label>
+						<p>The particulars given above are true and correct.</p>
+					</div>
+					<div>
+						<p class="fw-bold pt-5 mt-5">({{ invoice_total_words }})</p>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<table class="table table-sm table-bordered">
+
+						<tbody>
+							<tr>
+								<td class="fw-bold">Taxable Value (Rs.)</td>
+								<td class="fw-bold">{{ taxable_value }}</td>
+							</tr>
+							<tr>
+								<td>SGST/UT</td>
+								<td>{{ sgst_total }}</td>
+							</tr>
+							<tr>
+								<td>CGST</td>
+								<td>{{ cgst_total }}</td>
+							</tr>
+							<tr>
+								<td>IGST</td>
+								<td>{{ igst_total }}</td>
+							</tr>
+							<tr>
+								<td>Loading/Unloading</td>
+								<td>{{ loading_unloading_total }}</td>
+							</tr>
+							<tr>
+								<td>Freight</td>
+								<td>{{ freight_total }}</td>
+							</tr>
+							<tr>
+								<td class="fw-bold">Total Value of Invoice</td>
+								<td class="fw-bold">{{ invoice_total }}</td>
+							</tr>
+
+
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+			<div class="row mt-2">
+				<div class="col-sm-6">
+					<!-- <p>Signature of Receiver
+	</p> -->
+				</div>
+				<div class="col-sm-6 text-center">
+					<p><label for="" id="company_name2">For ABC Technology and Services Pvt Ltd</label></p>
+					<p> <label for="">Authorised Signatory</label></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<p class="bottom-text mx-auto">This is computer generated Invoice hence signature not required</p>
+
+	<script>
+
+		fetch('../config.json')
+			.then(response => response.json())
+			.then(data => {
+				document.getElementById("company_name").innerHTML = data.company_name;
+				document.getElementById("company_name1").innerHTML = data.company_name;
+				document.getElementById("company_name2").innerHTML = data.company_name;
+				document.getElementById("gstin").innerHTML = data.gstin;
+				document.getElementById("gstin1").innerHTML = data.gstin;
+				document.getElementById("address").innerHTML = data.address;
+				document.getElementById("address1").innerHTML = data.address;
+			});
+
+
+	</script>
+
+</body>
+
+</html>
